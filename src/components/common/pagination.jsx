@@ -29,7 +29,7 @@ class Pagination extends Component {
                 <a
                   className="page-link"
                   onClick={() => onPageChange(page)}
-                  tabindex="-1"
+                  tabIndex="-1"
                 >
                   {page}
                 </a>

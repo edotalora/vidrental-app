@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
-import Like from "./common/like";
 import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate";
 import ListGroup from "./common/listGroup";
 import { getGenres } from "../services/fakeGenreService";
+import MoviesTable from "./moviesTable";
+import _ from "lodash";
 
 class Movie extends Component {
   state = {
@@ -12,10 +13,11 @@ class Movie extends Component {
     pageSize: 4,
     currentPage: 1,
     genres: [],
+    sortColumn: { path: "title", order: "asc" },
   };
 
   componentDidMount() {
-    const genres = [{ name: "All genres" }, ...getGenres()];
+    const genres = [{ _id: "", name: "All genres" }, ...getGenres()];
     this.setState({ movies: getMovies(), genres });
   }
 
@@ -52,6 +54,9 @@ class Movie extends Component {
   handleGenreSelect = (genre) => {
     console.log("genre selected ", genre);
     this.setState({ selectedGenre: genre, currentPage: 1 });
+  };
+  handleSort = (sortCol) => {
+    this.setState({ sortColumn: sortCol });
   };
 
   //table.table>head>tr>th*4´
@@ -116,6 +121,7 @@ class Movie extends Component {
       currentPage,
       selectedGenre,
       movies: allMovies,
+      sortColumn,
     } = this.state;
     if (count === 0) {
       return <p>There are no movies on the database</p>;
@@ -125,57 +131,28 @@ class Movie extends Component {
       selectedGenre && selectedGenre._id
         ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
         : allMovies;
-    const movies = paginate(filtered, currentPage, pageSize);
+    //this orderBy will return a new array
+    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+    const movies = paginate(sorted, currentPage, pageSize);
     return (
       <React.Fragment>
-        <div class="row">
-          <div class="col-2">
+        <div className="row">
+          <div className="col-2">
             <ListGroup
               items={this.state.genres}
               onItemSelect={this.handleGenreSelect}
               selectedItem={this.state.selectedGenre}
             ></ListGroup>
           </div>
-          <div class="col-md">
+          <div className="col-md">
             <p>Showing {filtered.length} movies available</p>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col">Title</th>
-                  <th scope="col">Genre</th>
-                  <th scope="col">Stock</th>
-                  <th scope="col">Rate</th>
-                  <th scope="col"></th>
-                  <th scope="col"></th>
-                </tr>
-              </thead>
-              {movies.map((movie) => {
-                return (
-                  <tbody>
-                    <tr key={movie._id}>
-                      <td scope="row">{movie.title}</td>
-                      <td scope="row">{movie.genre.name}</td>
-                      <td scope="row">{movie.numberInStock}</td>
-                      <td scope="row">{movie.dailyRentalRate}</td>
-                      <td scope="row">
-                        <Like
-                          liked={movie.liked}
-                          onClicked={() => this.handleLike(movie)}
-                        ></Like>
-                      </td>
-                      <td scope="row">
-                        <button
-                          className="btn btn-danger btn-sm m-2"
-                          onClick={() => this.handleDelete(movie)}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                );
-              })}
-            </table>
+            <MoviesTable
+              movies={movies}
+              onDelete={this.handleDelete}
+              onLike={this.handleLike}
+              onSort={this.handleSort}
+              sortColumn={sortColumn}
+            ></MoviesTable>
             <Pagination
               itemCount={filtered.length}
               pageSize={pageSize}

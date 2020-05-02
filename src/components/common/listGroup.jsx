@@ -15,8 +15,8 @@ class ListGroup extends Component {
         {items.map((item) => {
           return (
             <li
-              onClick={() => onItemSelect(item)}
               key={item[valueProperty]}
+              onClick={() => onItemSelect(item)}
               className={
                 item === selectedItem
                   ? "list-group-item active"
