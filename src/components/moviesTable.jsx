@@ -1,6 +1,16 @@
 import React, { Component } from "react";
 import Like from "./common/like";
+import TableHeader from "./common/tableHeader";
 class MoviesTable extends Component {
+  //columns doesn`t have to be in the stae because is not going to chnage.
+  columns = [
+    { path: "title", label: "Title" },
+    { path: "genre.name", label: "Genre" },
+    { path: "numberInStock", label: "Stock" },
+    { path: "dailyRentalRate", label: "Rate" },
+    { key: "like" },
+    { key: "delete" },
+  ];
   state = {};
   raiseSort = (path) => {
     const sortCol = { ...this.props.sortColumn };
@@ -13,30 +23,17 @@ class MoviesTable extends Component {
     this.props.onSort(sortCol);
   };
   render() {
-    const { movies, onDelete, onLike } = this.props;
+    const { movies, onDelete, onLike, onSort, sortColumn } = this.props;
     return (
       <table className="table">
-        <thead>
-          <tr>
-            <th scope="col" onClick={() => this.raiseSort("title")}>
-              Title
-            </th>
-            <th scope="col" onClick={() => this.raiseSort("genre.name")}>
-              Genre
-            </th>
-            <th scope="col" onClick={() => this.raiseSort("numberInStock")}>
-              Stock
-            </th>
-            <th scope="col" onClick={() => this.raiseSort("dailyRentalRate")}>
-              Rate
-            </th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        {movies.map((movie) => {
-          return (
-            <tbody key={movie._id}>
+        <TableHeader
+          columns={this.columns}
+          sortColumn={sortColumn}
+          onSort={onSort}
+        ></TableHeader>
+        <tbody>
+          {movies.map((movie) => {
+            return (
               <tr key={movie._id}>
                 <td scope="row">{movie.title}</td>
                 <td scope="row">{movie.genre.name}</td>
@@ -57,9 +54,9 @@ class MoviesTable extends Component {
                   </button>
                 </td>
               </tr>
-            </tbody>
-          );
-        })}
+            );
+          })}
+        </tbody>
       </table>
     );
   }
