@@ -1,15 +1,38 @@
 import React, { Component } from "react";
 import Like from "./common/like";
-import TableHeader from "./common/tableHeader";
+import Table from "./common/table";
 class MoviesTable extends Component {
   //columns doesn`t have to be in the stae because is not going to chnage.
+  //content is a function to be able to pass parameters
   columns = [
     { path: "title", label: "Title" },
     { path: "genre.name", label: "Genre" },
     { path: "numberInStock", label: "Stock" },
     { path: "dailyRentalRate", label: "Rate" },
-    { key: "like" },
-    { key: "delete" },
+    {
+      key: "like",
+      content: (movie) => {
+        return (
+          <Like
+            liked={movie.liked}
+            onClicked={() => this.props.onLike(movie)}
+          ></Like>
+        );
+      },
+    },
+    {
+      key: "delete",
+      content: (movie) => {
+        return (
+          <button
+            className="btn btn-danger btn-sm m-2"
+            onClick={() => this.props.onDelete(movie)}
+          >
+            Delete
+          </button>
+        );
+      },
+    },
   ];
   state = {};
   raiseSort = (path) => {
@@ -23,43 +46,15 @@ class MoviesTable extends Component {
     this.props.onSort(sortCol);
   };
   render() {
-    const { movies, onDelete, onLike, onSort, sortColumn } = this.props;
+    const { movies, onSort, sortColumn } = this.props;
     return (
-      <table className="table">
-        <TableHeader
-          columns={this.columns}
-          sortColumn={sortColumn}
-          onSort={onSort}
-        ></TableHeader>
-        <tbody>
-          {movies.map((movie) => {
-            return (
-              <tr key={movie._id}>
-                <td scope="row">{movie.title}</td>
-                <td scope="row">{movie.genre.name}</td>
-                <td scope="row">{movie.numberInStock}</td>
-                <td scope="row">{movie.dailyRentalRate}</td>
-                <td scope="row">
-                  <Like
-                    liked={movie.liked}
-                    onClicked={() => onLike(movie)}
-                  ></Like>
-                </td>
-                <td scope="row">
-                  <button
-                    className="btn btn-danger btn-sm m-2"
-                    onClick={() => onDelete(movie)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <Table
+        columns={this.columns}
+        sortColumn={sortColumn}
+        onSort={onSort}
+        data={movies}
+      ></Table>
     );
   }
 }
-
 export default MoviesTable;
