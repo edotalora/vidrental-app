@@ -1,11 +1,18 @@
 import React, { Component } from "react";
 import Like from "./common/like";
 import Table from "./common/table";
+import { Link } from "react-router-dom";
 class MoviesTable extends Component {
   //columns doesn`t have to be in the stae because is not going to chnage.
   //content is a function to be able to pass parameters
   columns = [
-    { path: "title", label: "Title" },
+    {
+      path: "title",
+      label: "Title",
+      content: (movie) => {
+        return <Link to={`/movies/${movie._id}`}>{movie.title}</Link>;
+      },
+    },
     { path: "genre.name", label: "Genre" },
     { path: "numberInStock", label: "Stock" },
     { path: "dailyRentalRate", label: "Rate" },
