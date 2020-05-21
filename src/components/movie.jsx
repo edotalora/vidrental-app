@@ -5,6 +5,7 @@ import { paginate } from "../utils/paginate";
 import ListGroup from "./common/listGroup";
 import { getGenres } from "../services/fakeGenreService";
 import MoviesTable from "./moviesTable";
+import { Link, NavLink } from "react-router-dom";
 import _ from "lodash";
 
 class Movie extends Component {
@@ -90,6 +91,13 @@ class Movie extends Component {
           </div>
           <div className="col-md">
             <p>Showing {totalCount} movies available</p>
+            <Link
+              to="/movies/new"
+              className="btn btn-primary"
+              style={{ marginBottom: 20 }}
+            >
+              New Movie
+            </Link>
             <MoviesTable
               movies={data}
               onDelete={this.handleDelete}
