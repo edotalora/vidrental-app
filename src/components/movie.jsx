@@ -3,6 +3,7 @@ import { getMovies } from "../services/fakeMovieService";
 import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate";
 import ListGroup from "./common/listGroup";
+import Input from "./common/input";
 import { getGenres } from "../services/fakeGenreService";
 import MoviesTable from "./moviesTable";
 import { Link, NavLink } from "react-router-dom";
@@ -15,6 +16,7 @@ class Movie extends Component {
     currentPage: 1,
     genres: [],
     sortColumn: { path: "title", order: "asc" },
+    searchText: "",
   };
 
   componentDidMount() {
@@ -34,6 +36,7 @@ class Movie extends Component {
     movies[movieToUpdateIndex].liked = !movies[movieToUpdateIndex].liked;
     this.setState({ movies });
   };
+
   //this method should receive a page number
   handlePageChange = (pageNumber) => {
     console.log(pageNumber);
@@ -45,7 +48,7 @@ class Movie extends Component {
   };
   handleGenreSelect = (genre) => {
     console.log("genre selected ", genre);
-    this.setState({ selectedGenre: genre, currentPage: 1 });
+    this.setState({ selectedGenre: genre, currentPage: 1, searchText: "" });
   };
   handleSort = (sortCol) => {
     this.setState({ sortColumn: sortCol });
@@ -70,10 +73,32 @@ class Movie extends Component {
     return { totalCount: filtered.length, data: movies };
   };
 
+  handleChange = ({ currentTarget: input }) => {
+    const searchText = input.value;
+    this.setState({ searchText });
+    //filtrar todos los movies por el valor obtenido
+    const allMovies = getMovies();
+    //includes or startsWith can be used
+    const filteredMovies =
+      searchText.length > 0
+        ? allMovies.filter((m) =>
+            m.title.toLowerCase().includes(searchText.toLowerCase())
+          )
+        : allMovies;
+
+    console.log("filtered movies", filteredMovies);
+
+    //actualizar estado de los movies para que se filtre sobre esa
+    this.setState({
+      movies: filteredMovies,
+      selectedGenre: null,
+      currentPage: 1,
+    });
+  };
   render() {
     const { length: count } = this.state.movies;
-    const { pageSize, currentPage, sortColumn } = this.state;
-    if (count === 0) {
+    const { pageSize, currentPage, sortColumn, searchText } = this.state;
+    if (count === 0 && searchText.length === 0) {
       return <p>There are no movies on the database</p>;
     }
 
@@ -90,7 +115,6 @@ class Movie extends Component {
             ></ListGroup>
           </div>
           <div className="col-md">
-            <p>Showing {totalCount} movies available</p>
             <Link
               to="/movies/new"
               className="btn btn-primary"
@@ -98,6 +122,13 @@ class Movie extends Component {
             >
               New Movie
             </Link>
+            <p>Showing {totalCount} movies available</p>
+            <Input
+              name="search"
+              placeHolder="Search..."
+              value={searchText}
+              onChange={this.handleChange}
+            ></Input>
             <MoviesTable
               movies={data}
               onDelete={this.handleDelete}
