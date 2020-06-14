@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";
 import Movie from "./components/movie";
@@ -16,6 +17,7 @@ class App extends Component {
     //this is the second method of the mount phase.
     return (
       <main className="container">
+        <ToastContainer></ToastContainer>
         <NavBar></NavBar>
         <div className="content">
           <Switch>

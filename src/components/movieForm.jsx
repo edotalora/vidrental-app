@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import Form from "./common/form";
 import Joi from "joi-browser";
-import { saveMovie, getMovie } from "../services/fakeMovieService";
-import { getGenres } from "../services/fakeGenreService";
+import { saveMovie, getMovie } from "../services/movieService";
+import { getGenres } from "../services/genreService";
+import { toast } from "react-toastify";
 
 class MovieForm extends Form {
   state = {
@@ -16,21 +17,32 @@ class MovieForm extends Form {
     errors: {},
   };
 
-  componentDidMount() {
-    const genres = getGenres();
-    this.setState({ genres });
+  async populateGenres() {
+    const genresResult = await getGenres();
+    this.setState({ genres: genresResult });
+  }
 
-    const movieId = this.props.match.params.id;
-    console.log("movieId", movieId);
-    if (movieId === "new") return;
+  async populateMovies() {
+    try {
+      const movieId = this.props.match.params.id;
+      console.log("movieId", movieId);
+      if (movieId === "new") return;
 
-    const movie = getMovie(movieId);
+      const { data: movie } = await getMovie(movieId);
 
-    //using replace instead of push to avoid going back
-    if (!movie) return this.props.history.replace("/not-found");
+      //map movie returned by the server for a structure that can be used in this form
+      this.setState({ data: this.mapToViewModel(movie) });
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404) {
+        toast.error("the movie to update was not found");
+        return this.props.history.replace("/not-found");
+      }
+    }
+  }
 
-    //map movie returned by the server for a structure that can be used in this form
-    this.setState({ data: this.mapToViewModel(movie) });
+  async componentDidMount() {
+    await this.populateGenres();
+    await this.populateMovies();
   }
 
   mapToViewModel(movie) {
