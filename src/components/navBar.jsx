@@ -4,6 +4,7 @@ import { Link, NavLink } from "react-router-dom";
 class NavBar extends Component {
   state = {};
   render() {
+    const { user } = this.props;
     return (
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <Link className="navbar-brand" to="/">
@@ -20,33 +21,51 @@ class NavBar extends Component {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarText">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
+        <div className="collapse navbar-collapse" id="navbarText">
+          <ul className="navbar-nav mr-auto">
+            <li className="nav-item">
               <NavLink className="nav-link" to="/movies">
                 Movies
               </NavLink>
             </li>
-            <li class="nav-item">
+            <li className="nav-item">
               <NavLink className="nav-link" to="/customers">
                 Customers
               </NavLink>
             </li>
-            <li class="nav-item">
+            <li className="nav-item">
               <NavLink className="nav-link" to="/rentals">
                 Rentals
               </NavLink>
             </li>
-            <li class="nav-item">
-              <NavLink className="nav-link" to="/register">
-                Register
-              </NavLink>
-            </li>
-            <li class="nav-item">
-              <NavLink className="nav-link" to="/login">
-                Login
-              </NavLink>
-            </li>
+            {!user && (
+              <React.Fragment>
+                <li className="nav-item">
+                  <NavLink className="nav-link" to="/register">
+                    Register
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className="nav-link" to="/login">
+                    Login
+                  </NavLink>
+                </li>
+              </React.Fragment>
+            )}
+            {user && (
+              <React.Fragment>
+                <li className="nav-item">
+                  <NavLink className="nav-link" to="/profile">
+                    {user.name}
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className="nav-link" to="/logout">
+                    Logout
+                  </NavLink>
+                </li>
+              </React.Fragment>
+            )}
           </ul>
         </div>
       </nav>

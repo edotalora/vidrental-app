@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Like from "./common/like";
 import Table from "./common/table";
 import { Link } from "react-router-dom";
+import auth from "./../services/authService";
 class MoviesTable extends Component {
   //columns doesn`t have to be in the stae because is not going to chnage.
   //content is a function to be able to pass parameters
@@ -27,20 +28,28 @@ class MoviesTable extends Component {
         );
       },
     },
-    {
-      key: "delete",
-      content: (movie) => {
-        return (
-          <button
-            className="btn btn-danger btn-sm m-2"
-            onClick={() => this.props.onDelete(movie)}
-          >
-            Delete
-          </button>
-        );
-      },
-    },
   ];
+  deleteColumn = {
+    key: "delete",
+    content: (movie) => {
+      return (
+        <button
+          className="btn btn-danger btn-sm m-2"
+          onClick={() => this.props.onDelete(movie)}
+        >
+          Delete
+        </button>
+      );
+    },
+  };
+  constructor() {
+    //super must be added if we call a custom constructor.
+    super();
+    const user = auth.getCurrentUser();
+    if (user && user.isAdmin) {
+      this.columns.push(this.deleteColumn);
+    }
+  }
   state = {};
   raiseSort = (path) => {
     const sortCol = { ...this.props.sortColumn };
@@ -53,6 +62,15 @@ class MoviesTable extends Component {
     this.props.onSort(sortCol);
   };
   render() {
+    /**
+     * My solution 
+     if (!auth.getCurrentUser()) {
+       this.columns = this.columns.filter((col) => {
+         return col.key !== "delete";
+       });
+     }
+     */
+
     const { movies, onSort, sortColumn } = this.props;
     return (
       <Table
