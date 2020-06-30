@@ -1,9 +1,8 @@
 import http from "./httpService";
-import config from "../config.json";
 import _ from "lodash"; //underscore js library upgrade
 import jwtDecode from "jwt-decode";
 
-const apiEndpoint = config.apiUrl + "/auth";
+const apiEndpoint = "/auth";
 const tokenKey = "token";
 
 //this was defined to get rid of bidirectional dependencies.

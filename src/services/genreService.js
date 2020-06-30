@@ -1,8 +1,7 @@
 import http from "./httpService";
-import config from "../config.json";
 
 export async function getGenres() {
-  const { data: genres } = await http.get(config.apiUrl + "/genres", {
+  const { data: genres } = await http.get("/genres", {
     crossdomain: true,
   });
   console.log("response", genres);

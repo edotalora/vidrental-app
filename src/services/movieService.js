@@ -1,8 +1,7 @@
 import http from "./httpService";
-import config from "../config.json";
 import _ from "lodash"; //underscore js library upgrade
 
-const apiEndpoint = config.apiUrl + "/movies";
+const apiEndpoint = "/movies";
 
 function movieUrl(id) {
   return `${apiEndpoint}/${id}`;

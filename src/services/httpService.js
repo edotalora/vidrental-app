@@ -8,6 +8,8 @@ import logger from "./logService";
 //include token header
 //bidirectional dependenccy to my auth service
 
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+
 axios.interceptors.response.use(null, (error) => {
   //only if it is an unexpected error
   if (
